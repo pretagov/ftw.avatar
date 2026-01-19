@@ -4,10 +4,7 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
-try:
-    from PIL.ImageFont import _ImagingFtNotInstalled   
-except ImportError:
-    from PIL.ImageFont import _imagingft_not_installed as _ImagingFtNotInstalled
+from PIL._util import DeferredError
 from PIL.ImageFont import core
 from Products.CMFCore.utils import getToolByName
 from random import random
@@ -15,7 +12,7 @@ from zope.component.hooks import getSite
 from zope.interface import implementer
 import os.path
 
-if core.__class__ is _ImagingFtNotInstalled:
+if isinstance(core, DeferredError):
     FREETYPE_MISSING = (
         'The "_imagingft" C module is not installed, '
         ' which is part of "freetype".'
@@ -103,7 +100,8 @@ class DefaultAvatarGenerator(object):
     def text_position(self, text, font):
         """Return the top-left point where the text should be placed.
         """
-        textwidth, textheight = font.getsize(text)
+        bbox = font.getbbox(text)
+        textwidth, textheight = bbox[2] - bbox[0], bbox[3] - bbox[1]
         left = ((self.square_size - textwidth) / 2.0)
         top = (self.square_size - textheight) / (2 * 1.2)
         return left, top
