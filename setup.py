@@ -44,7 +44,7 @@ setup(name='ftw.avatar',
 
       install_requires=[
         'AccessControl',
-        'Pillow',
+        'Pillow>9',
         'Products.CMFCore',
         'Products.PlonePAS',
         'Zope2',
